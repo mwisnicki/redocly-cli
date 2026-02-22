@@ -1,0 +1,51 @@
+openapi: 3.0.0
+info:
+  title: Data URL Test API - Simple
+  version: 1.0.0
+  description: Simpler API spec demonstrating data URL support in references
+  license:
+    name: MIT
+
+servers:
+  - url: https://api.example.com/v1
+    description: Example API server
+
+paths:
+  /ping:
+    get:
+      summary: Health check endpoint
+      description: Simple ping endpoint to verify API is running
+      operationId: ping
+      tags:
+        - Health
+      security: []
+      responses:
+        '200':
+          description: Server is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  timestamp:
+                    type: string
+                    format: date-time
+
+tags:
+  - name: Health
+    description: Health check endpoints
+
+components:
+  schemas:
+    # These schemas are referenced from data URLs via $ref
+    # Data URLs allow embedding the schema directly in the reference
+    User:
+      # Base64-encoded schema
+      $ref: 'data:application/json;base64,ewogICJ0eXBlIjogIm9iamVjdCIsCiAgInByb3BlcnRpZXMiOiB7CiAgICAiaWQiOiB7CiAgICAgICJ0eXBlIjogInN0cmluZyIKICAgIH0sCiAgICAibmFtZSI6IHsKICAgICAgInR5cGUiOiAic3RyaW5nIgogICAgfQogIH0KfQ=='
+
+    Product:
+      # URL-encoded schema
+      $ref: 'data:application/json,%7B%22type%22%3A%22object%22%2C%22properties%22%3A%7B%22id%22%3A%7B%22type%22%3A%22string%22%7D%2C%22name%22%3A%7B%22type%22%3A%22string%22%7D%7D%7D'

@@ -11,6 +11,7 @@ output/
 *.tsbuildinfo
 *.tgz
 redoc-static.html
+bundled*.yaml
 packages/cli/README.md
 .env
 packages/respect-core/src/modules/runtime-expressions/abnf-parser.js

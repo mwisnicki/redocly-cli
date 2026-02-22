@@ -1,0 +1,103 @@
+openapi: 3.0.0
+info:
+  title: Data URL Test API
+  version: 1.0.0
+  description: |
+    API demonstrating data URL support in references.
+    This spec uses data URLs (RFC 2397) to embed schemas directly in $ref fields.
+
+servers:
+  - url: https://api.example.com/v1
+    description: Example API server
+
+paths:
+  /users:
+    get:
+      summary: Get all users
+      description: Returns a list of users with id, name, and email
+      operationId: getUsers
+      tags:
+        - Users
+      responses:
+        '200':
+          description: Successful response with user list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  # Base64-encoded JSON schema
+                  $ref: 'data:application/json;base64,ewogICJ0eXBlIjogIm9iamVjdCIsCiAgInByb3BlcnRpZXMiOiB7CiAgICAiaWQiOiB7CiAgICAgICJ0eXBlIjogInN0cmluZyIsCiAgICAgICJkZXNjcmlwdGlvbiI6ICJVbmlxdWUgdXNlciBpZGVudGlmaWVyIgogICAgfSwKICAgICJuYW1lIjogewogICAgICAidHlwZSI6ICJzdHJpbmciLAogICAgICAiZGVzY3JpcHRpb24iOiAiVXNlcidzIGZ1bGwgbmFtZSIKICAgIH0sCiAgICAiZW1haWwiOiB7CiAgICAgICJ0eXBlIjogInN0cmluZyIsCiAgICAgICJmb3JtYXQiOiAiZW1haWwiLAogICAgICAiZGVzY3JpcHRpb24iOiAiVXNlcidzIGVtYWlsIGFkZHJlc3MiCiAgICB9CiAgfSwKICAicmVxdWlyZWQiOiBbImlkIiwgIm5hbWUiLCAiZW1haWwiXQp9'
+
+  /products:
+    get:
+      summary: Get all products
+      description: Returns a list of products with id, name, and price
+      operationId: getProducts
+      tags:
+        - Products
+      responses:
+        '200':
+          description: Successful response with product list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  # URL-encoded JSON schema
+                  $ref: 'data:application/json,%7B%22type%22%3A%22object%22%2C%22properties%22%3A%7B%22id%22%3A%7B%22type%22%3A%22string%22%2C%22description%22%3A%22Unique%20product%20identifier%22%7D%2C%22name%22%3A%7B%22type%22%3A%22string%22%2C%22description%22%3A%22Product%20name%22%7D%2C%22price%22%3A%7B%22type%22%3A%22number%22%2C%22description%22%3A%22Product%20price%20in%20USD%22%2C%22minimum%22%3A0%7D%7D%2C%22required%22%3A%5B%22id%22%2C%22name%22%2C%22price%22%5D%7D'
+
+  /orders:
+    post:
+      summary: Create a new order
+      description: Creates a new order with user and product references
+      operationId: createOrder
+      tags:
+        - Orders
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              # Simple data URL without base64 encoding
+              $ref: 'data:application/json,%7B%22type%22%3A%22object%22%2C%22properties%22%3A%7B%22userId%22%3A%7B%22type%22%3A%22string%22%7D%2C%22productIds%22%3A%7B%22type%22%3A%22array%22%2C%22items%22%3A%7B%22type%22%3A%22string%22%7D%7D%2C%22quantity%22%3A%7B%22type%22%3A%22integer%22%2C%22minimum%22%3A1%7D%7D%2C%22required%22%3A%5B%22userId%22%2C%22productIds%22%2C%22quantity%22%5D%7D'
+      responses:
+        '201':
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orderId:
+                    type: string
+                    description: Unique order identifier
+                  status:
+                    type: string
+                    enum: [pending, confirmed, shipped, delivered]
+                    description: Current order status
+                  createdAt:
+                    type: string
+                    format: date-time
+                    description: Order creation timestamp
+
+tags:
+  - name: Users
+    description: User management endpoints
+  - name: Products
+    description: Product catalog endpoints
+  - name: Orders
+    description: Order management endpoints
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - code
+        - message
